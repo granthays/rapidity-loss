@@ -11,9 +11,30 @@
 void FitFind(){
 
 	double grphMin = 0.;
-	double grphMax = 3.2;
-	double p0 = 0.00935;
-	double p1 = 2.;
+	double grphMax = 2.9;
+	
+	double xMin = -2.;
+	double xMax = 4.;
+	
+	double yMin = 0.;
+	double yMax = 0.4;
+	
+	double p0 = 0.04;
+	double p1 = 1.13;
+	
+	// Sets the function of fit to accommodate a half dataset or a full one
+	//	true  =  Apply fit for half dataset i.e. x >= 0
+	//	false =  Apply fit for full dataset
+	bool isHalf = true;
+	
+	// Determine which parameters to fix
+	//	0 = No Parameters Fixed, both vary
+	//	1 = Fix the first parameter i.e. p0
+	//	2 = Fix the second parameter i.e. p1
+	//	3 = Fix both parameters
+	int fixPar = 1;
+	
+/*********************************************************************************/
 	
 	// Setting up Canvas and Grid for Graph
 	TCanvas* c = new TCanvas();
@@ -24,11 +45,11 @@ void FitFind(){
 	gStyle->SetOptFit();
 	
 	// Creating and filling the TGraphErrors
-	TGraphErrors *grph = new TGraphErrors("./62.4GeVP.txt","%lg %lg %lg");
+	TGraphErrors *grph = new TGraphErrors("./158GeVP.txt","%lg %lg %lg");
 	
 	// Set titles for the graph and it's axes
 	grph->SetTitle(
-		"62.4 GeV (Positive);
+		"158 GeV (Positive);
 		y';
 		dN/dy'");
 	// Set plot marker style to filled squares
@@ -36,24 +57,49 @@ void FitFind(){
 	// Set plot marker color to red
 	grph->SetMarkerColor(kRed);
 	// Set the range of the X-axis so that it shows everything, but isn't too big
-	grph->GetXaxis()->SetLimits(0.,4.);
-	grph->SetMinimum(0.);
-	grph->SetMaximum(0.4);
+	grph->GetXaxis()->SetLimits(xMin,xMax);
+	grph->SetMinimum(yMin);
+	grph->SetMaximum(yMax);
 	// Draw with options:
 	//		A = Axis are drawn around the graph
 	//		P = The current marker is plotted at each point
 	grph->Draw("AP");
 	
 	// This is the fit function for the whole range of data. Gaussian + Landau
-	//TF1 *total = new TF1("total","[0]*(TMath::Exp(x/[1]))",grphMin,grphMax);
-	TF1 *total = new TF1("total","[0]*(TMath::Exp(x/[1]))",grphMin,grphMax);
+	if(isHalf){
+		TF1 *total = new TF1("total","[0]*(TMath::Exp(x/[1]))",grphMin,grphMax);
+	} else {
+		TF1 *total = new TF1("total","[0]*(TMath::Exp(x/[1]) + TMath::Exp(-x/[1]))",grphMin,grphMax);
+	}
 	
 	// Set the fit line color to red, for some reason (I should probably change this)
 	total->SetLineColor(kAzure);
 	
+	
+	if(fixPar == 0){
+		total->SetParameter(0,p0);
+		total->SetParameter(1,p1);
+	} else if(fixPar == 1) {
+		total->FixParameter(0,p0);
+		total->SetParameter(1,p1);
+	} else if(fixPar == 2) {
+		total->SetParameter(0,p0);
+		total->FixParameter(1,p1);
+	} else {
+		total->FixParameter(0,p0);
+		total->FixParameter(1,p1);
+	}
+	
+	
+	
+	/*
 	// Using the retrieved parameter info to set the parameters for the full fit function
 	total->FixParameter(0,p0);
-	total->FixParameter(1,p1);
+	//total->FixParameter(1,p1);
+	total->SetParameter(1,p1);
+	*/
+	
+	
 	
 	// Fitting the entire range with the fit amalgamation
 	grph->Fit(total);
