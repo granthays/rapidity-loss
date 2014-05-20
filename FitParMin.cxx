@@ -3,7 +3,7 @@
  *
  * Title:		FitFind.cxx
  * Author:		Grant Hays
- * Date: 		28 Mar. 2014
+ * Date: 		20 May. 2014
  * Description:	This is a ROOT macro to find the best-fit parameters of the 
  *				rapidity loss function estimated by Chris A. Minimization
  *				techniques will be used from MINUIT, MINUIT2, MINOS, or MINGRAD.
@@ -42,8 +42,8 @@ void minuitFunction(int& nDim, double* gout, double& result, double par[], intfl
 	//		arg4 - estimated distance to minimum
 	//		arg5 - ignore for now
 	//		arg6 - ignore for now
-	minimizer->SetParameter(0,"A",2,1,0,0);
-	minimizer->SetParameter(1,"exDiv",2,1,0,0);
+	minimizer->SetParameter(0,"A",0.07364/2,1,0,0);
+	minimizer->SetParameter(1,"exDiv",1.13,1,0,0);
 	
 	// Run the SIMPLEX minimizer to get close to the minimum
 	minimizer->ExecuteCommand("SIMPLEX",0,0);
@@ -64,8 +64,8 @@ void minuitFunction(int& nDim, double* gout, double& result, double par[], intfl
 	// 		-Repeat for other parameters
 	double errA;
 	for(errA = 0; errA < 10; errA += 0.001) {
-		minimizer->SetParameter(0,"A",2,1,0,0);
-		minimizer->SetParameter(1,"exDiv",2,1,0,0);
+		minimizer->SetParameter(0,"A",0.07364/2,1,0,0);
+		minimizer->SetParameter(1,"exDiv",1.13,1,0,0);
 		minimizer->ExecuteCommand("MIGRAD",0,0);
 		double t = fitFcn(minimizer->GetParameter(0),
 						  minimizer->GetParameter(1));
