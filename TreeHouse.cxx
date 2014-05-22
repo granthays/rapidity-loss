@@ -4,7 +4,7 @@
 #include <string> 
 #include <iostream> 
 using namespace std; 
-void TreeHouse2() { 
+void TreeHouse() { 
 	// Location of the directory for input and output files 
 	string dirName = "D:/Users/Grant/Documents/GitHub/rapidity-loss/" ; 
 	
