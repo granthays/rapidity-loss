@@ -8,7 +8,7 @@
  *				fit for the data using a combination of Gaussian and Landau. The 
  *				expectation value for the y'-beam is also found.
  *********************************************************************************/
-void FitFind(){
+void FitFindPol4(){
 
 	// The range of the fit.
 	double fitMin = 0.;
@@ -23,8 +23,10 @@ void FitFind(){
 	double yMax = 0.4;
 	
 	// Initial guesses for the parameters
-	double p0 = 0.00935;
-	double p1 = 1.;
+	double p0 = 0.008;
+	double p1 = 0.00269685;
+	double p2 = 0.000480676;
+
 	
 	// Sets the function of fit to accommodate a half dataset or a full one
 	//		true  =  Apply fit for half dataset i.e. x >= 0
@@ -50,11 +52,11 @@ void FitFind(){
 	gStyle->SetOptFit();
 	
 	// Creating and filling the TGraphErrors
-	TGraphErrors *grph = new TGraphErrors("./624GeVP.dat","%lg %lg %lg");
+	TGraphErrors *grph = new TGraphErrors("./200GeVP.dat","%lg %lg %lg");
 	
 	// Set titles for the graph and it's axes
 	grph->SetTitle(
-		"62.4 GeV (Positive);
+		"200 GeV Pol4;
 		y';
 		dN/dy'");
 	// Set plot marker style to filled squares
@@ -81,7 +83,7 @@ void FitFind(){
 	//				p0 * ( Exp(x/p1) + Exp(-x/p1) )
 	//
 	if(isHalf){
-		TF1 *total = new TF1("total","[0]*(TMath::Exp(x/[1]))",fitMin,fitMax);
+		TF1 *total = new TF1("total","([0] + ([1]*(x*x)) + ([2]*(x*x*x*x)))",fitMin,fitMax);
 	} else {
 		TF1 *total = new TF1("total","[0]*(TMath::Exp(x/[1]) + TMath::Exp(-x/[1]))",fitMin,fitMax);
 	}
@@ -94,6 +96,7 @@ void FitFind(){
 	if(fixPar == 0){
 		total->SetParameter(0,p0);
 		total->SetParameter(1,p1);
+		total->SetParameter(2,p2);
 	} else if(fixPar == 1) {
 		total->FixParameter(0,p0);
 		total->SetParameter(1,p1);
@@ -134,7 +137,7 @@ void FitFind(){
 	covMatrix.Print();
 	
 	// Retrieve an array of the parameter values
-	Double_t par[2];
+	Double_t par[3];
 	total->GetParameters(par);
 	
 	// Retrieve an array of the errors for each parameter of the fit function
@@ -142,6 +145,7 @@ void FitFind(){
 	
 	cout << "\n\n\tp0:\t" << par[0];
 	cout << "\n\n\tp1:\t" << par[1];
+	cout << "\n\n\tp2:\t" << par[2];
 	
 	
 	// Create a function for the mean integral
@@ -149,6 +153,7 @@ void FitFind(){
 	
 	total2->SetParameter(0,par[0]);
 	total2->SetParameter(1,par[1]);
+	total2->SetParameter(2,par[2]);
 	
 	// Compute integral for bottom of the expectation value function
 	Double_t integral1 = total->Integral(0.,fitMax);
