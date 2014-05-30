@@ -1,18 +1,21 @@
 /*********************************************************************************
- * 			Fitting Data and Finding Expectation Value with ROOT
+ * 	Fitting Data w/ 4th Deg. Polynomial and Finding Expectation Value with ROOT
  *
- * Title:		FitFind.cxx
+ * Title:		FitFindPol4.cxx
  * Author:		Grant Hays
- * Date: 		28 Mar. 2014
+ * Date: 		29 May 2014
  * Description:	This is a ROOT macro to plot data from RHIC and finding the best 
- *				fit for the data using a combination of Gaussian and Landau. The 
- *				expectation value for the y'-beam is also found.
+ *				fit for the data using a fourth degree polynomial. The total
+ *				rapidity loss (delta-y) for the y'-beam is also found.
  *********************************************************************************/
 void FitFindPol4(){
 
 	// The range of the fit.
-	double fitMin = 0.;
-	double fitMax = 3.2;
+	//		200:	0.4 - 3.6
+	//		158:	0.0 - 2.9
+	//		6.24:	0.0 - 3.2
+	double fitMin = 0.4;
+	double fitMax = 3.6;
 	
 	// The range of the X-axis on the printed graph
 	double xMin = 0.;
@@ -23,24 +26,19 @@ void FitFindPol4(){
 	double yMax = 0.4;
 	
 	// Initial guesses for the parameters
+	//		200:	0.008		0.00269685		 0.000480676
+	//		158:	0.03682		0.073939		-0.00400871
+	//		62.4:	0.00935		0.0055318		 0.0016652
 	double p0 = 0.008;
 	double p1 = 0.00269685;
 	double p2 = 0.000480676;
 
-	
-	// Sets the function of fit to accommodate a half dataset or a full one
-	//		true  =  Apply fit for half dataset i.e. x >= 0
-	//		false =  Apply fit for full dataset
-	bool isHalf = true;
-	
-	// Determine which parameters to fix
-	//		0 = No Parameters Fixed, both vary
-	//		1 = Fix the first parameter i.e. p0
-	//		2 = Fix the second parameter i.e. p1
-	//		3 = Fix both parameters
-	//		4 = No parameters fixed, but both have limits
-	int fixPar = 0;
-	
+	// 200:		5.4
+	// 158:		3.0
+	// 62.4:	4.2
+	double maxRapidity = 5.4;
+
+
 /*********************************************************************************/
 	
 	// Setting up Canvas and Grid for Graph
@@ -73,62 +71,28 @@ void FitFindPol4(){
 	grph->Draw("AP");
 	
 	
-	// This is the fit function found by Chris Appier. If isHalf is true, then
-	//		the function is only for the positive half: 
-	//				
-	//				p0 * Exp(x/p1)
-	//		
-	//		Otherwise the function is for both sides:
-	//
-	//				p0 * ( Exp(x/p1) + Exp(-x/p1) )
-	//
-	if(isHalf){
-		TF1 *total = new TF1("total","([0] + ([1]*(x*x)) + ([2]*(x*x*x*x)))",fitMin,fitMax);
-	} else {
-		TF1 *total = new TF1("total","[0]*(TMath::Exp(x/[1]) + TMath::Exp(-x/[1]))",fitMin,fitMax);
-	}
-	
+	// This is the fit function found by Chris Appier
+	TF1 *total = new TF1("total","([0] + ([1]*(x*x)) + ([2]*(x*x*x*x)))",fitMin,fitMax);
+
 	
 	// Set the fit line color to red, for some reason (I should probably change this)
 	total->SetLineColor(kAzure);
 	
 	
-	if(fixPar == 0){
-		total->SetParameter(0,p0);
-		total->SetParameter(1,p1);
-		total->SetParameter(2,p2);
-	} else if(fixPar == 1) {
-		total->FixParameter(0,p0);
-		total->SetParameter(1,p1);
-	} else if(fixPar == 2) {
-		total->SetParameter(0,p0);
-		total->FixParameter(1,p1);
-	} else if(fixPar == 3){
-		total->FixParameter(0,p0);
-		total->FixParameter(1,p1);
-	} else {
-		total->SetParameter(0,p0);
-		total->SetParLimits(0,p0-0.01869,p0+0.01869);
-		total->SetParameter(1,p1);
-		total->SetParLimits(1,1,2);
-	}
+	total->SetParameter(0,p0);
+	//total->SetParLimits(0,p0-0.02,p0);
+	total->SetParameter(1,p1);
+	total->SetParameter(2,p2);
 	
 /****************************************/
 	// Fitting the entire range with the fit function
-	grph->Fit(total,"WEM");
+	TFitResultPtr r = grph->Fit(total, "SEM");
 	//grph->Fit(total);
 /****************************************/
 
-
-//gaussian.SetParameter(0, gausppar.GetParameter(ipar));
-	
-	
-	
 	// Retrieve and print the number of parameters in the function
 	int numParam = total->GetNpar();
 	cout << "\n\nNumber of Parameters:\t" << numParam << endl << endl;
-	
-	
 	
 	
 	// Retrieve and print the Covariance Matrix of the fit function
@@ -143,43 +107,53 @@ void FitFindPol4(){
 	// Retrieve an array of the errors for each parameter of the fit function
 	Double_t *parErrors = total->GetParErrors();
 	
-	cout << "\n\n\tp0:\t" << par[0];
-	cout << "\n\n\tp1:\t" << par[1];
-	cout << "\n\n\tp2:\t" << par[2];
+	cout << "\n\n\tp0:\t" << par[0] << "\t+/-\t" << r->ParError(0);
+	cout << "\n\n\tp1:\t" << par[1] << "\t+/-\t" << r->ParError(1);
+	cout << "\n\n\tp2:\t" << par[2] << "\t+/-\t" << r->ParError(2);
 	
 	
 	// Create a function for the mean integral
-	TF1 *total2 = new TF1("total2","total * x",fitMin,fitMax);
+	TF1 *total2 = new TF1("total2","x*([0] + ([1]*(x*x)) + ([2]*(x*x*x*x)))",fitMin,fitMax);
+	//TF1 *total2 = new TF1("total2","x*total",fitMin,fitMax);
 	
 	total2->SetParameter(0,par[0]);
 	total2->SetParameter(1,par[1]);
 	total2->SetParameter(2,par[2]);
 	
 	// Compute integral for bottom of the expectation value function
-	Double_t integral1 = total->Integral(0.,fitMax);
+	Double_t integral1 = total->Integral(0.,maxRapidity);
 	
 	// Compute error of the integral
-	Double_t integral1Error = total->IntegralError(0.,fitMax,parErrors,
-													covMatrix.GetMatrixArray());
+	Double_t integral1Error = total->IntegralError(0.,maxRapidity,r->GetParams(), 
+										r->GetCovarianceMatrix().GetMatrixArray() );
 													
 	// Compute integral for top of the expectation value function
-	Double_t integral2 = total2->Integral(0.,fitMax);
+	Double_t integral2 = total2->Integral(0.,maxRapidity);
 	
 	// Compute error of the integral
-	Double_t integral2Error = total2->IntegralError(0.,fitMax,parErrors,
-													covMatrix.GetMatrixArray());
+	Double_t integral2Error = total2->IntegralError(0.,maxRapidity,r->GetParams(), 
+										r->GetCovarianceMatrix().GetMatrixArray() );
 													
 	
 	Double_t expY = integral2/integral1;
-	Double_t expYerr = integral1Error/integral2Error;
 	
-	Double_t deltaY = fitMax - expY;
+	Double_t expYerr = expY*(TMath::Sqrt((TMath::Power((integral2Error/integral2),2)) + 
+										(TMath::Power((integral1Error/integral1),2))));
+	
+	Double_t deltaY = maxRapidity - expY;
+	
+	//Double_t deltaYerr = deltaY*(TMath::Sqrt((TMath::Power((0.05*maxRapidity),2)) + 
+	//									(TMath::Power(expYerr,2))));
+	
+	
+	cout << "\n\n\tFirst integral:\t" << integral1;
+	cout << "\n\tSecond integral:\t" << integral2;
 	
 	cout << "\n\n\tError of first integral:\t" << integral1Error;
 	cout << "\n\tError of second integral:\t" << integral2Error; 
 	
 	
 	cout << "\n\n\t<y>:\t\t" << expY << "\t\t+/-\t" << expYerr;
-	cout << "\n\tDelta-y:\t" << deltaY << endl << endl;
+	cout << "\n\tDelta-y:\t" << deltaY << "\t\t+/-\t" << expYerr << endl << endl;
 	
 }
