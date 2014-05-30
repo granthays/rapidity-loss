@@ -85,7 +85,7 @@ void FitFind(){
 	
 /****************************************/
 	// Fitting the entire range with the fit function
-	TFitResultPtr r = grph->Fit(total, "SWEM");
+	TFitResultPtr r = grph->Fit(total, "SEM");
 	//grph->Fit(total,"WEM");
 	//grph->Fit(total);
 /****************************************/
