@@ -14,10 +14,9 @@ void FitFindPol4(){
 	//		200:	0.4 - 3.6
 	//		158:	0.0 - 2.9
 	//		6.24:	0.0 - 3.2
-	double fitMin = 0.4;
-	double fitMax = 3.6;
-	
-	// The range of the X-axis on the printed graph
+	double fitMin = 0.;
+	double fitMax = 2.9;
+		// The range of the X-axis on the printed graph
 	double xMin = 0.;
 	double xMax = 5.;
 	
@@ -29,14 +28,14 @@ void FitFindPol4(){
 	//		200:	0.008		0.00269685		 0.000480676
 	//		158:	0.03682		0.073939		-0.00400871
 	//		62.4:	0.00935		0.0055318		 0.0016652
-	double p0 = 0.008;
-	double p1 = 0.00269685;
-	double p2 = 0.000480676;
+	double p0 = 0.03682;
+	double p1 = 0.073939;
+	double p2 = -0.00400871;
 
 	// 200:		5.4
 	// 158:		3.0
 	// 62.4:	4.2
-	double maxRapidity = 5.4;
+	double maxRapidity = 3.;
 
 
 /*********************************************************************************/
@@ -50,11 +49,11 @@ void FitFindPol4(){
 	gStyle->SetOptFit();
 	
 	// Creating and filling the TGraphErrors
-	TGraphErrors *grph = new TGraphErrors("./200GeVP.dat","%lg %lg %lg");
+	TGraphErrors *grph = new TGraphErrors("./158GeVP.dat","%lg %lg %lg");
 	
 	// Set titles for the graph and it's axes
 	grph->SetTitle(
-		"200 GeV Pol4;
+		"158 GeV Pol4;
 		y';
 		dN/dy'");
 	// Set plot marker style to filled squares
@@ -80,13 +79,13 @@ void FitFindPol4(){
 	
 	
 	total->SetParameter(0,p0);
-	//total->SetParLimits(0,p0-0.02,p0);
+	total->SetParLimits(0,0.,p0);
 	total->SetParameter(1,p1);
 	total->SetParameter(2,p2);
 	
 /****************************************/
 	// Fitting the entire range with the fit function
-	TFitResultPtr r = grph->Fit(total, "SEM");
+	TFitResultPtr r = grph->Fit(total, "SWEM");
 	//grph->Fit(total);
 /****************************************/
 

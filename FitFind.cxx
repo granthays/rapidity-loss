@@ -79,14 +79,13 @@ void FitFind(){
 	total->SetLineColor(kAzure);
 
 
-	//total->SetParameter(0,p0);
 	total->SetParameter(0,p0);
 	//total->SetParLimits(0,0,p0);
 	total->SetParameter(1,p1);
 	
 /****************************************/
 	// Fitting the entire range with the fit function
-	TFitResultPtr r = grph->Fit(total, "SEM");
+	TFitResultPtr r = grph->Fit(total, "SWEM");
 	//grph->Fit(total,"WEM");
 	//grph->Fit(total);
 /****************************************/
