@@ -1,0 +1,90 @@
+200 GeV
+
+	 FCN=449.958 FROM MINOS     STATUS=SUCCESSFUL     26 CALLS         171 TOTAL
+						 EDM=3.93776e-007    STRATEGY= 1      ERROR MATRIX ACCURATE
+	  EXT PARAMETER                                   STEP         FIRST
+	  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE
+	   1  p0          6.66180e-003  1.69920e-004  3.95669e-004 -1.62873e-003
+	   2  p1          1.28977e+000  1.77675e-002  1.77675e-002 -7.78585e-004
+
+
+
+
+			p0:     0.0066618	+/-     0.00016992
+			p1:     1.28977		+/-     0.0177675
+
+
+			<y>:            4.19355         +/-     0.151557
+			Delta-y:        1.20645         +/-     0.151557
+		
+		
+		
+---------------------------------------------------------------------------------
+
+
+
+158 GeV
+
+
+	 FCN=2.52962e+007 FROM MINOS     STATUS=SUCCESSFUL     13 CALLS         120 TOTAL
+						 EDM=1.05209e-007    STRATEGY= 1      ERROR MATRIX ACCURATE
+	  EXT PARAMETER                                   STEP         FIRST
+	  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE
+	   1  p0          3.68200e-002  1.47023e-009 -3.40603e-006** at limit **
+	   2  p1          1.12302e+000  1.16983e-006  1.16983e-006 -2.49626e-001
+	   
+
+
+
+			p0:     0.03682         +/-     1.47023e-009
+			p1:     1.12302         +/-     1.16983e-006
+
+
+			<y>:            2.09987         +/-     6.15061e-006
+			Delta-y:        0.900132        +/-     6.15061e-006
+		
+
+		
+---------------------------------------------------------------------------------
+
+
+
+62.4 GeV
+	 FCN=126.392 FROM MINOS     STATUS=SUCCESSFUL     22 CALLS         112 TOTAL
+						 EDM=2.38109e-008    STRATEGY= 1      ERROR MATRIX ACCURATE
+	  EXT PARAMETER                                   STEP         FIRST
+	  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE
+	   1  p0          9.35000e-003  3.10359e-005 -0.00000e+000** at limit **
+	   2  p1          1.00247e+000  6.76547e-003  6.76547e-003  1.92818e-001
+
+
+
+
+			p0:     0.00935         +/-     3.10359e-005
+			p1:     1.00247         +/-     0.00676547
+
+			
+			<y>:            3.26215         +/-     0.104846
+			Delta-y:        0.937853        +/-     0.104846
+			
+			
+62.4 GeV Poly4
+	 FCN=2.27627 FROM MINOS     STATUS=SUCCESSFUL     20 CALLS         139 TOTAL
+						 EDM=2.84589e-020    STRATEGY= 1      ERROR MATRIX ACCURATE
+	  EXT PARAMETER                                   STEP         FIRST
+	  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE
+	   1  p0          1.92085e-002  7.13582e-004  5.58777e-011  2.58803e-009
+	   2  p1          3.15261e-003  1.22971e-003 -1.63072e-010 -7.12860e-009
+	   3  p2          1.78204e-003  1.60708e-004  1.60708e-004 -1.76824e-007
+
+
+
+			p0:     0.0192085       +/-     0.000713582
+
+			p1:     0.00315261      +/-     0.00122971
+
+			p2:     0.00178204      +/-     0.000160708
+
+
+			<y>:            3.27544         +/-     0.138909
+			Delta-y:        0.924555        +/-     0.138909
